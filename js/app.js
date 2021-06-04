@@ -1,12 +1,14 @@
-import { load, save } from "./event-service.js"
+import { load, save, remove } from "./event-service.js"
 
 (function() {
-    var calendar, modal, events = [], selectedEvent = {}
+    var calendar, modal, confirmationModal, events = [], selectedEvent = {}
     document.addEventListener("DOMContentLoaded", init)
 
     function init() {
         document.getElementById("save").addEventListener("click", saveEvent)
-        modal = new bootstrap.Modal(document.querySelector(".modal"))
+        document.getElementById("submitRemove").addEventListener("click", removeEvent)
+        modal = new bootstrap.Modal(document.getElementById("eventForm"))
+        confirmationModal = new bootstrap.Modal(document.getElementById("eventRemove"))
         events = load()
         var calendarEl = document.getElementById("calendar")
         calendar = new FullCalendar.Calendar(calendarEl, {
@@ -47,17 +49,29 @@ import { load, save } from "./event-service.js"
             events.push(event)
             calendar.addEvent(event)
         }
-        save(events)
+
+        save(event)
         modal.hide()
     }
 
+    function removeEvent() {
+        var id = document.getElementById("id").value
+        var event = calendar.getEventById(id)
+        events = events.filter(function(d) { return d.id !== id })
+        event.remove()
+        remove(id)
+        confirmationModal.hide()
+    }
+
     function handleEventClick(info) {
+        document.getElementById("remove").style.display = "block"
         selectedEvent = info.event
         populateForm(info.event)
         modal.show()
     }
     
     function handleDateSelect(info) {
+        document.getElementById("remove").style.display = "none"
         selectedEvent = {}
         populateForm(info)
         modal.show()

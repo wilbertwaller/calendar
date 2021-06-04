@@ -17,7 +17,7 @@
         <div id="calendar"></div>
     </div>
 
-    <div class="modal" tabindex="-1">
+    <div class="modal" id="eventForm" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
@@ -27,17 +27,20 @@
                 <div class="modal-body">
                     <input type="text" id="id" hidden>
                     <div class="row">
-                        <div class="col-9">
+                        <div class="col-8">
                             <div>
                                 <label for="title" class="form-label">Title</label>
                                 <input type="text" class="form-control" id="title" name="title">
                             </div>
                         </div>
-                        <div class="col-3">
+                        <div class="col-2">
                             <div class="form-check">
                                 <input type="checkbox" class="form-check-input" id="allDay" name="allDay">
                                 <label for="allDay" class="form-check-label">All Day</label>
                             </div>
+                        </div>
+                        <div class="col-2">
+                            <button type="button" class="btn btn-danger" id="remove" data-bs-target="#eventRemove" data-bs-toggle="modal" data-bs-dismiss="modal">Remove</button>
                         </div>
                     </div>
                     <div class="row">
@@ -58,6 +61,23 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary" id="save">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal" id="eventRemove" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Remove Calendar Event</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-warning">Are you sure you want to remove this event?</div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-target="#eventForm" data-bs-toggle="modal" data-bs-dismiss="modal">Back</button>
+                    <button type="button" class="btn btn-danger" id="submitRemove">Remove</button>
                 </div>
             </div>
         </div>
