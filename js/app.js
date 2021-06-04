@@ -1,7 +1,7 @@
 import { load, save, remove } from "./event-service.js"
 
 (function() {
-    var calendar, modal, confirmationModal, events = [], selectedEvent = {}
+    var calendar, modal, confirmationModal, selectedEvent = {}
     document.addEventListener("DOMContentLoaded", init)
 
     function init() {
@@ -9,7 +9,6 @@ import { load, save, remove } from "./event-service.js"
         document.getElementById("submitRemove").addEventListener("click", removeEvent)
         modal = new bootstrap.Modal(document.getElementById("eventForm"))
         confirmationModal = new bootstrap.Modal(document.getElementById("eventRemove"))
-        events = load()
         var calendarEl = document.getElementById("calendar")
         calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: "dayGridMonth",
@@ -18,7 +17,7 @@ import { load, save, remove } from "./event-service.js"
                 center: "title",
                 end: "dayGridMonth,timeGridWeek"
             },
-            events: events,
+            events: load(),
             eventClick: handleEventClick,
             selectable: true,
             select: handleDateSelect
@@ -35,10 +34,6 @@ import { load, save, remove } from "./event-service.js"
         var event = { id, title, allDay, start, end }
 
         if (selectedEvent.id === id) {
-            events = events.map(function(d) {
-                if (d.id === id) return event
-                return d
-            })
             var calendarEvent = calendar.getEventById(id)
             if (selectedEvent.title !== title) calendarEvent.setProp("title", title)
             if (selectedEvent.allDay !== allDay) calendarEvent.setAllDay(allDay)
@@ -46,7 +41,6 @@ import { load, save, remove } from "./event-service.js"
             if (selectedEvent.end !== end) calendarEvent.setEnd(end)
         }
         else {
-            events.push(event)
             calendar.addEvent(event)
         }
 
@@ -57,7 +51,6 @@ import { load, save, remove } from "./event-service.js"
     function removeEvent() {
         var id = document.getElementById("id").value
         var event = calendar.getEventById(id)
-        events = events.filter(function(d) { return d.id !== id })
         event.remove()
         remove(id)
         confirmationModal.hide()
