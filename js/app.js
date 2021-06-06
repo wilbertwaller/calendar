@@ -39,11 +39,12 @@ import { load, save, remove } from "./event-service.js"
         var allDay = document.getElementById("allDay").checked
         var start = document.getElementById("start").value
         var end = document.getElementById("end").value
-        var daysOfWeek = $("#daysOfWeek").val()
-        var startTime = document.getElementById("startTime").value
-        var endTime = document.getElementById("endTime").value
-        var startRecur = document.getElementById("startRecur").value
-        var endRecur = document.getElementById("endRecur").value
+        var isRecurring = document.getElementById("isRecurring").checked
+        var daysOfWeek = isRecurring ? $("#daysOfWeek").val() : undefined
+        var startTime = isRecurring ? document.getElementById("startTime").value : undefined
+        var endTime = isRecurring ? document.getElementById("endTime").value : undefined
+        var startRecur = isRecurring ? document.getElementById("startRecur").value : undefined
+        var endRecur = isRecurring ? document.getElementById("endRecur").value : undefined
         var event = { id, title, allDay, start, end, daysOfWeek, startTime, endTime, startRecur, endRecur }
 
         if (selectedEvent.id === id) {
@@ -51,16 +52,11 @@ import { load, save, remove } from "./event-service.js"
                 if (d.id === id) return event
                 return d
             })
+            // Simple recurrence props cannot be set to cause a rerender.
+            // Best to remove then re-add the event
             var calendarEvent = calendar.getEventById(id)
-            if (selectedEvent.title !== title) calendarEvent.setProp("title", title)
-            if (selectedEvent.allDay !== allDay) calendarEvent.setAllDay(allDay)
-            if (selectedEvent.start !== start) calendarEvent.setStart(start)
-            if (selectedEvent.end !== end) calendarEvent.setEnd(end)
-            if (selectedEvent.daysOfWeek !== daysOfWeek) calendarEvent.setProp("daysOfWeek", daysOfWeek.map(function(d) { return parseInt(d) }))
-            if (selectedEvent.startTime !== startTime) calendarEvent.setProp("startTime", startTime)
-            if (selectedEvent.endTime !== endTime) calendarEvent.setProp("endTime", endTime)
-            if (selectedEvent.startRecur !== startRecur) calendarEvent.setProp("startRecur", startRecur)
-            if (selectedEvent.endRecur !== endRecur) calendarEvent.setProp("endRecur", endRecur)
+            calendarEvent.remove()
+            calendar.addEvent(event)
         }
         else {
             events.push(event)
