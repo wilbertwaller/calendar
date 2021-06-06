@@ -9,6 +9,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.7.0/main.css">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="css/style.css">
 </head>
 
@@ -40,7 +41,8 @@
                             </div>
                         </div>
                         <div class="col-2">
-                            <button type="button" class="btn btn-danger" id="remove" data-bs-target="#eventRemove" data-bs-toggle="modal" data-bs-dismiss="modal">Remove</button>
+                            <button type="button" class="btn btn-danger" id="remove" data-bs-target="#eventRemove"
+                                data-bs-toggle="modal" data-bs-dismiss="modal">Remove</button>
                         </div>
                     </div>
                     <div class="row">
@@ -54,6 +56,59 @@
                             <div>
                                 <label for="end" class="form-label">End</label>
                                 <input type="datetime-local" class="form-control" id="end" name="end">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="isRecurring" name="isRecurring">
+                                <label for="isRecurring" class="form-check-label">Recurring</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="recurring">
+                        <div class="row">
+                            <div class="col">
+                                <label for="daysOfWeek" title="Omitting selection assumes the event repeats every day">Days of the Week
+                                    <select name="daysOfWeek" id="daysOfWeek" multiple="multiple" style="width: 100%">
+                                        <option value="0">Sunday</option>
+                                        <option value="1">Monday</option>
+                                        <option value="2">Tuesday</option>
+                                        <option value="3">Wednesday</option>
+                                        <option value="4">Thursday</option>
+                                        <option value="5">Friday</option>
+                                        <option value="6">Saturday</option>
+                                    </select>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <div>
+                                    <label for="startTime" class="form-label">Start Time</label>
+                                    <input type="time" class="form-control" id="startTime" name="startTime">
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div>
+                                    <label for="endTime" class="form-label">End Time</label>
+                                    <input type="time" class="form-control" id="endTime" name="endTime">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <div>
+                                    <label for="startRecur" class="form-label">Start of Recurrence</label>
+                                    <input type="date" class="form-control" id="startRecur" name="startRecur">
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div>
+                                    <label for="endRecur" class="form-label">End of Recurrence</label>
+                                    <input type="date" class="form-control" id="endRecur" name="endRecur">
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -76,17 +131,21 @@
                     <div class="alert alert-warning">Are you sure you want to remove this event?</div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-target="#eventForm" data-bs-toggle="modal" data-bs-dismiss="modal">Back</button>
+                    <button type="button" class="btn btn-secondary" data-bs-target="#eventForm" data-bs-toggle="modal"
+                        data-bs-dismiss="modal">Back</button>
                     <button type="button" class="btn btn-danger" id="submitRemove">Remove</button>
                 </div>
             </div>
         </div>
     </div>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
         crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.7.0/main.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script type="module" src="js/app.js"></script>
 </body>
 

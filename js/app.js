@@ -1,14 +1,22 @@
 import { load, save, remove } from "./event-service.js"
 
 (function() {
-    var calendar, modal, confirmationModal, selectedEvent = {}
-    document.addEventListener("DOMContentLoaded", init)
+    var calendar, modal, confirmationModal, events = [], selectedEvent = {}
+    $(document).ready(init)
 
     function init() {
-        document.getElementById("save").addEventListener("click", saveEvent)
-        document.getElementById("submitRemove").addEventListener("click", removeEvent)
+        $("#save").click(saveEvent)
+        $("#submitRemove").click(removeEvent)
+        $("#isRecurring").change(toggleRecurrence)
+        $("#daysOfWeek").select2({
+            dropdownParent: $("#eventForm"),
+            closeOnSelect: false,
+            placeholder: "Select days of recurrence",
+            allowClear: true
+        })
         modal = new bootstrap.Modal(document.getElementById("eventForm"))
         confirmationModal = new bootstrap.Modal(document.getElementById("eventRemove"))
+        events = load()
         var calendarEl = document.getElementById("calendar")
         calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: "dayGridMonth",
@@ -17,7 +25,7 @@ import { load, save, remove } from "./event-service.js"
                 center: "title",
                 end: "dayGridMonth,timeGridWeek"
             },
-            events: load(),
+            events: events,
             eventClick: handleEventClick,
             selectable: true,
             select: handleDateSelect
@@ -31,16 +39,31 @@ import { load, save, remove } from "./event-service.js"
         var allDay = document.getElementById("allDay").checked
         var start = document.getElementById("start").value
         var end = document.getElementById("end").value
-        var event = { id, title, allDay, start, end }
+        var daysOfWeek = $("#daysOfWeek").val()
+        var startTime = document.getElementById("startTime").value
+        var endTime = document.getElementById("endTime").value
+        var startRecur = document.getElementById("startRecur").value
+        var endRecur = document.getElementById("endRecur").value
+        var event = { id, title, allDay, start, end, daysOfWeek, startTime, endTime, startRecur, endRecur }
 
         if (selectedEvent.id === id) {
+            events = events.map(function(d) {
+                if (d.id === id) return event
+                return d
+            })
             var calendarEvent = calendar.getEventById(id)
             if (selectedEvent.title !== title) calendarEvent.setProp("title", title)
             if (selectedEvent.allDay !== allDay) calendarEvent.setAllDay(allDay)
             if (selectedEvent.start !== start) calendarEvent.setStart(start)
             if (selectedEvent.end !== end) calendarEvent.setEnd(end)
+            if (selectedEvent.daysOfWeek !== daysOfWeek) calendarEvent.setProp("daysOfWeek", daysOfWeek.map(function(d) { return parseInt(d) }))
+            if (selectedEvent.startTime !== startTime) calendarEvent.setProp("startTime", startTime)
+            if (selectedEvent.endTime !== endTime) calendarEvent.setProp("endTime", endTime)
+            if (selectedEvent.startRecur !== startRecur) calendarEvent.setProp("startRecur", startRecur)
+            if (selectedEvent.endRecur !== endRecur) calendarEvent.setProp("endRecur", endRecur)
         }
         else {
+            events.push(event)
             calendar.addEvent(event)
         }
 
@@ -51,15 +74,25 @@ import { load, save, remove } from "./event-service.js"
     function removeEvent() {
         var id = document.getElementById("id").value
         var event = calendar.getEventById(id)
+        events = events.filter(function(d) { return d.id !== id })
         event.remove()
         remove(id)
         confirmationModal.hide()
     }
 
+    function toggleRecurrence() {
+        var isRecurring = document.getElementById("isRecurring").checked
+        var recurring = document.querySelector(".recurring")
+        if (isRecurring) recurring.style.display = "block"
+        else recurring.style.display = "none"
+    }
+
     function handleEventClick(info) {
         document.getElementById("remove").style.display = "block"
-        selectedEvent = info.event
-        populateForm(info.event)
+        // Calendar info does not provide easy way to obtain recurrence related
+        // props. Using persisted data to populate form instead.
+        selectedEvent = events.find(function(d) { return d.id === info.event.id })
+        populateForm(selectedEvent)
         modal.show()
     }
     
@@ -82,6 +115,7 @@ import { load, save, remove } from "./event-service.js"
         allDay.checked = info.allDay
         start.value = datetimeLocalFormat(info.start)
         end.value = datetimeLocalFormat(info.end)
+        populateRecurrence(info)
     }
 
     function datetimeLocalFormat(dateStr) {
@@ -101,5 +135,31 @@ import { load, save, remove } from "./event-service.js"
         if (seconds < 10) seconds = `0${seconds}`
 
         return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}`
+    }
+
+    function populateRecurrence(info) {
+        var isRecurring = document.getElementById("isRecurring")
+        var daysOfWeek = $("#daysOfWeek")
+        var startTime = document.getElementById("startTime")
+        var endTime = document.getElementById("endTime")
+        var startRecur = document.getElementById("startRecur")
+        var endRecur = document.getElementById("endRecur")
+        daysOfWeek.val(info.daysOfWeek).trigger("change")
+        startTime.value = info.startTime
+        endTime.value = info.endTime
+        startRecur.value = info.startRecur
+        endRecur.value = info.endRecur
+        if (eventIsRecurring(info)) {
+            isRecurring.checked = true
+            document.querySelector(".recurring").style.display = "block"
+        }
+        else {
+            isRecurring.checked = false
+            document.querySelector(".recurring").style.display = "none"
+        }
+    }
+
+    function eventIsRecurring(info) {
+        return info.daysOfWeek || info.startTime || info.endTime || info.startRecur || info.endRecur
     }
 })()
