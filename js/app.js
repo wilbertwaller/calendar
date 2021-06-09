@@ -23,7 +23,7 @@ import { load, save, remove } from "./event-service.js"
             headerToolbar: {
                 start: "today prev,next",
                 center: "title",
-                end: "dayGridMonth,timeGridWeek"
+                end: "dayGridMonth,timeGridWeek,listWeek"
             },
             events: events,
             eventClick: handleEventClick,
@@ -56,12 +56,11 @@ import { load, save, remove } from "./event-service.js"
             // Best to remove then re-add the event
             var calendarEvent = calendar.getEventById(id)
             calendarEvent.remove()
-            calendar.addEvent(event)
         }
         else {
             events.push(event)
-            calendar.addEvent(event)
         }
+        calendar.addEvent(event)
 
         save(event)
         modal.hide()
